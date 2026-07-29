@@ -1,0 +1,139 @@
+{
+  "theme_strategy": "Editorial Dark Mode (Primary) with subtle earthy/parchment light mode for long-form reading elements, creating a museum-like, deeply devotional and cinematic atmosphere.",
+  "typography": {
+    "headings": {
+      "family": "Cormorant Garamond",
+      "import_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap",
+      "usage_rules": "Use for all H1, H2, H3. Embrace italic variants for emphasis, Sanskrit terms, or poetic quotes (like Gita Govinda lines). Never bold excessively; prefer font-light or font-medium for a premium editorial look. Extremely tight or slightly loose tracking based on context (tight for massive hero, loose for chapter headers)."
+    },
+    "body": {
+      "family": "Outfit",
+      "import_url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap",
+      "usage_rules": "Clean, highly legible geometric/humanist sans for long-form reading (Nityanushtanam mantras, history paragraphs). text-base with leading-relaxed (1.625+ line height)."
+    },
+    "accents": {
+      "usage_rules": "Use uppercase Outfit with wide tracking (tracking-[0.2em]) for overlines, labels, chapter numbers, and metadata."
+    }
+  },
+  "colors": {
+    "primary_dark": {
+      "background": "#0C0A09",
+      "surface": "#1C1917",
+      "border": "#292524"
+    },
+    "accents": {
+      "aged_gold": "#D4AF37",
+      "vermilion": "#9F1239",
+      "incense_smoke": "#E5E5E5"
+    },
+    "text": {
+      "primary": "#F5F5F4",
+      "secondary": "#A8A29E",
+      "on_accent": "#000000"
+    },
+    "usage_rules": "The site is predominantly dark (stone-950) to create a cinematic, temple-like sanctity. Use Vermilion (#9F1239) for micro-interactions or spiritual high-impact moments. Use Aged Gold (#D4AF37) for divine text, active states, and chapter numerals. Never use full-screen gradients; use a radial glow (e.g., glowing gold or red from top corners at 10% opacity) to mimic temple lighting."
+  },
+  "visual_enhancers": {
+    "textures": "Apply a subtle SVG noise overlay (mix-blend-overlay, 2-4% opacity) on the main background to remove digital flatness and mimic ancient stone/parchment.",
+    "borders": "1px solid border-stone-800 for delineating bento grids, chapter sections, and admin cards.",
+    "shadows": "Minimal use of shadows in dark mode. Instead, use border highlights and subtle inner glows.",
+    "images": "Hero images must have a vignette or black gradient overlay (e.g., bg-gradient-to-t from-stone-950 to-transparent) to ensure text contrast. Use cinematic clipping (e.g., arched masks or sharp rectangular crops with generous padding)."
+  },
+  "component_strategy": {
+    "marketing_pages": "Custom HTML/Tailwind. Raw div structures for overlapping grids and staggered layouts. Avoid Shadcn for main public-facing experiential sections.",
+    "admin_panel": "Strict Shadcn UI. Use DataTable, Dialog, Form, Input, Button, Card, Tabs. Functional, high-density, accessible.",
+    "forms_and_interactive": "Shadcn components deeply customized to match the brand (gold/vermilion focus rings, dark stone backgrounds).",
+    "marquee": "Use react-fast-marquee. Slow speed (20-30). Pale gold or dark stone-800 text (depending on contrast). Used for Sanskrit shlokas or 'Jai Jagannath'."
+  },
+  "grids": {
+    "manifesto_chapters": "Staggered 'Tetris' bento grid. Wide gaps (gap-8 md:gap-16). Large numbers spanning multiple rows.",
+    "gallery": "Masonry or staggered bento grid. Direct children of grid must be framer-motion motion.divs for scroll stagger.",
+    "admin_dashboard": "High-density CSS Grid (grid-cols-1 md:grid-cols-4), tight gaps (gap-4 or gap-6). Cards have h-full."
+  },
+  "layouts": {
+    "hero": "100vh height. Background image with slow scale (Ken Burns). Central or left-aligned massive heading with masked line-by-line reveal. Scroll indicator at bottom.",
+    "deep_pages": "Max-width containers (max-w-4xl) for readability on text-heavy pages (Biographies, Nityanushtanam). Include a sticky table of contents on the side for desktop.",
+    "navigation": "Crystal glassmorphism (backdrop-blur-xl bg-stone-950/70) sticky header. Bottom border border-stone-800. Must not be fully transparent."
+  },
+  "motion": {
+    "hero_reveal": "Framer Motion: Initial { y: '100%', opacity: 0 }, Animate { y: 0, opacity: 1 }, transition { staggerChildren: 0.1, duration: 0.8, ease: [0.33, 1, 0.68, 1] }. Text lines MUST be wrapped in overflow-hidden divs.",
+    "scroll_reveal": "Framer Motion whileInView for fading up sections as they enter viewport.",
+    "smooth_scroll": "MANDATORY: @studio-freight/lenis. Initialize in a higher-order component or layout wrapper for buttery smooth momentum scrolling.",
+    "micro_interactions": "Hover states on gallery items: image scale 1.05, filter grayscale to color, or subtle dimming of siblings."
+  },
+  "accessibility": {
+    "contrast": "Ensure all text, especially gold on dark, meets WCAG AA (at least 4.5:1 for body).",
+    "reduced_motion": "Respect prefers-reduced-motion media query in framer-motion configs.",
+    "testing": "All interactive elements, buttons, nav links, and form inputs MUST have data-testid attributes (e.g., data-testid='nav-gallery-link', data-testid='admin-upload-btn')."
+  },
+  "media": {
+    "image_urls": {
+      "temple_architecture": [
+        "https://images.pexels.com/photos/31969419/pexels-photo-31969419.jpeg",
+        "https://images.pexels.com/photos/31969428/pexels-photo-31969428.jpeg"
+      ],
+      "rituals_aarti": [
+        "https://images.unsplash.com/photo-1701453344115-e4616d4844d9",
+        "https://images.unsplash.com/photo-1666694051761-cd972857da30",
+        "https://images.unsplash.com/photo-1630764883473-e8c2056f0589",
+        "https://images.unsplash.com/photo-1762929968274-a5dff4fd75ef"
+      ],
+      "manuscripts_history": [
+        "https://images.pexels.com/photos/13207104/pexels-photo-13207104.jpeg",
+        "https://images.pexels.com/photos/15235034/pexels-photo-15235034.jpeg"
+      ],
+      "offerings_flowers": [
+        "https://images.pexels.com/photos/32299890/pexels-photo-32299890.jpeg",
+        "https://images.pexels.com/photos/31317668/pexels-photo-31317668.jpeg"
+      ],
+      "devotion": [
+        "https://images.pexels.com/photos/19195759/pexels-photo-19195759.jpeg",
+        "https://images.pexels.com/photos/34484944/pexels-photo-34484944.jpeg",
+        "https://images.unsplash.com/photo-1667506420529-b9f71a103ef9"
+      ],
+      "jagannath_deity": [
+        "https://images.unsplash.com/photo-1750992459302-7c17ef2501e4",
+        "https://images.unsplash.com/photo-1722404348790-85bf847dd863"
+      ],
+      "ratha_yatra": [
+        "https://images.pexels.com/photos/17349035/pexels-photo-17349035.jpeg",
+        "https://images.unsplash.com/photo-1784177542889-49bc95213140",
+        "https://images.unsplash.com/photo-1577649428994-a41a39ff862c",
+        "https://images.unsplash.com/photo-1577649428176-212243cd0655"
+      ],
+      "classical_art": [
+        "https://images.pexels.com/photos/34717652/pexels-photo-34717652.jpeg",
+        "https://images.pexels.com/photos/37804098/pexels-photo-37804098.jpeg",
+        "https://images.unsplash.com/photo-1713986719526-8c44918a9688",
+        "https://images.unsplash.com/photo-1714248376481-f3e37e023ec8"
+      ]
+    },
+    "usage": "Do not use placeholders. Use these URLs specifically where thematic fit is needed. For the Rath Yatra gallery, map the ratha_yatra images. For the Gita Govinda section, use classical_art. For Nityanushtanam, use rituals_aarti."
+  },
+  "instructions_to_main_agent": [
+    "You are building a high-end, Awwwards-level devotional and cultural editorial platform.",
+    "Implement @studio-freight/lenis in a global wrapper component for smooth momentum scrolling.",
+    "Use framer-motion heavily for the Hero section: wrap each text line of the main heading in a div with overflow-hidden, and animate the child text element up from y: 100%.",
+    "Install and use react-fast-marquee for the slow editorial scrolling text (Shlokas).",
+    "For typography, import 'Cormorant Garamond' and 'Outfit' from Google Fonts in index.css.",
+    "Build the Admin panel using Shadcn UI in a strictly functional layout. Route should be /admin.",
+    "Do NOT center-align body text on editorial pages. Keep it left-aligned for readability, limited to max-w-3xl.",
+    "Avoid the generic 'SaaS' look. No floating white cards with generic shadows on the public site.",
+    "All navigation, forms, and interactive buttons must contain data-testid attributes."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not converge toward generic outputs. Avoid 'AI slop' aesthetics.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition (e.g., transition: all). Apply to specific properties like opacity, transform.",
+    "You MUST NOT center align the app container, i.e., do not add .App { text-align: center; } in the css file.",
+    "Always use modern button styles (pill-shaped or sharp) with interaction animations & context-relevant color.",
+    "NEVER use emoji characters (🤖🧠💭💡🔮🎯) for icons. Use lucide-react or phosphor icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Add subtle grain textures, noise overlays, and loading animations.",
+    "NEVER use placeholder image URLs. Use the provided curated image links."
+  ]
+}
