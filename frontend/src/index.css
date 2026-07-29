@@ -60,7 +60,12 @@ body {
 a, button { cursor: pointer; }
 
 /* Masked reveal container */
-.mask-line { overflow: hidden; display: block; }
+.mask-line {
+  overflow: hidden;
+  display: block;
+  line-height: 1.02;
+  padding-top: 0.08em;
+}
 
 /* Editorial rule */
 .rule { height: 1px; background: #292524; }

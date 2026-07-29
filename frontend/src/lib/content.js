@@ -2,6 +2,7 @@
 
 export const NAV_LINKS = [
   { to: "/", label: "Home", testId: "nav-home" },
+  { to: "/about", label: "About", testId: "nav-about" },
   { to: "/temple", label: "Temple", testId: "nav-temple" },
   { to: "/ratha-yatra", label: "Ratha Yatra", testId: "nav-ratha" },
   { to: "/gita-govinda", label: "Gita Govinda", testId: "nav-gita" },

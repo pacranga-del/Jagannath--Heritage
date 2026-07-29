@@ -1,0 +1,21 @@
+{
+  "summary": "Iteration 3 focused frontend testing on the 'Jai' hero-title clipping bug fix and the Home→About refactor. All primary items PASS. Hero mask-line now has line-height:1.02 with padding-top:0.08em — measurements confirm inner motion.span top (103.98px) is 13.11px BELOW outer container top (90.88px), so the 'J' glyph is fully visible (no top clipping). Home page is compact: no about-chapters/ashtakam on /; home-directory renders all 12 expected cards with correct data-testids. New /about page loads with about-chapters section, hero copy 'A vow, a lineage...', Ashtakam quote block, and 'Write to the Trust' CTA link (rendered uppercase via CSS). Nav includes nav-about and all 12 previous nav items (some hidden below xl breakpoint at 1440px viewport due to space — visible at ≥1280 as designed). All secondary routes /temple, /ratha-yatra, /gita-govinda, /jagannathastakam, /gaudiya, /vedanta, /acharyas, /nityanushtanam, /gallery, /marketplace, /payment, /contact return 200. Backend regression skipped per request scope (frontend only, and iterations 1&2 already 100%).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_1.json", "/app/test_reports/iteration_2.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Console shows repeated 401 errors from an auth check request (likely GET /api/auth/me from a client-side session probe) firing on every route change. Not a functional bug (expected when unauthenticated), but consider suppressing/silencing these to keep the browser console clean for end users.",
+    "Some nav links (Ratha Yatra, Gita Govinda, Ashtakam, Nityanushtanam) are truncated at 1440px viewport width even though xl breakpoint is ≥1280px. Consider tightening nav spacing or reducing item count in the primary nav — current layout barely fits at 1440px."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (per scope)", "frontend": "100%"},
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 3 verified 'Jai' clipping fix (measured: innerTop 103.98 vs outerTop 90.88; outerHeight-innerHeight = 13.11px padding all inside — no clipping) and the Home→About refactor. All 12 home-directory cards, nav-about, /about page (chapters + ashtakam + CTA) confirmed. No follow-up needed for this iteration's scope."
+}

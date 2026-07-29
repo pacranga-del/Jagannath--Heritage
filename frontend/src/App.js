@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/AuthContext";
 import SiteLayout from "@/components/SiteLayout";
 
 import Home from "@/pages/Home";
+import About from "@/pages/About";
 import Temple from "@/pages/Temple";
 import RathaYatra from "@/pages/RathaYatra";
 import GitaGovinda from "@/pages/GitaGovinda";
@@ -49,6 +50,7 @@ function App() {
                   <SiteLayout>
                     <Routes>
                       <Route path="/" element={<Home />} />
+                      <Route path="/about" element={<About />} />
                       <Route path="/temple" element={<Temple />} />
                       <Route path="/ratha-yatra" element={<RathaYatra />} />
                       <Route path="/gita-govinda" element={<GitaGovinda />} />
