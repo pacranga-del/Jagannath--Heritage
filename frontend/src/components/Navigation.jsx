@@ -15,12 +15,17 @@ export default function Navigation() {
       data-testid="site-header"
       className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-stone-950/70 border-b border-stone-800"
     >
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 flex items-center justify-between h-16">
-        <Link to="/" data-testid="nav-brand" className="flex items-center gap-3">
-          <span className="w-6 h-6 rounded-full bg-[#D4AF37]/90 flex items-center justify-center">
-            <span className="w-2 h-2 rounded-full bg-stone-950" />
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 flex items-center justify-between gap-6 h-16">
+        <Link to="/" data-testid="nav-brand" className="flex items-center gap-2.5 shrink-0">
+          <span className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-[#D4AF37]/70 shrink-0 bg-stone-900">
+            <img
+              src="https://images.unsplash.com/photo-1750992459302-7c17ef2501e4?auto=format&fit=crop&q=85&w=200&h=200"
+              alt="Śrī Jagannātha"
+              className="w-full h-full object-cover"
+              loading="eager"
+            />
           </span>
-          <span className="font-serif-display text-[15px] tracking-tight leading-none">
+          <span className="hidden 2xl:inline font-serif-display text-[14px] tracking-tight leading-none whitespace-nowrap">
             Puri Jagannath <span className="italic text-stone-400">Trust</span>
           </span>
         </Link>
@@ -55,7 +60,7 @@ export default function Navigation() {
             <Link
               to="/admin/login"
               data-testid="nav-admin-login"
-              className="hidden md:inline-block text-[11px] uppercase tracking-eyebrow text-stone-400 hover:text-stone-100"
+              className="hidden md:inline-block whitespace-nowrap text-[11px] uppercase tracking-eyebrow text-stone-400 hover:text-stone-100"
             >
               Sign in
             </Link>

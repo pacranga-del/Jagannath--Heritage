@@ -5,6 +5,8 @@ import { api } from "../lib/api";
 import { formatApiErrorDetail } from "../lib/AuthContext";
 import { toast, Toaster } from "sonner";
 
+const TRUSTEE_EMAIL = "ranganathan@purijagannathtrust.com";
+
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,9 +16,20 @@ export default function Contact() {
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
+
+    // Open mailto so the message is dispatched to the Managing Trustee's inbox
+    const subject = `Message from ${name || "a devotee"} · Puri Jagannath Trust`;
+    const body = `${message}\n\n— ${name}\n${email}`;
+    const mailtoUrl = `mailto:${TRUSTEE_EMAIL}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
     try {
+      // Store on the backend as well for the Trust's records
       await api.post("/contact", { name, email, message });
-      toast.success("Thank you. Your note has reached the Trust.");
+      toast.success(`Thank you. Opening your mail app to send to ${TRUSTEE_EMAIL}…`);
+      // Open the user's mail client to actually deliver the note to the Trustee
+      window.location.href = mailtoUrl;
       setName(""); setEmail(""); setMessage("");
     } catch (err) {
       toast.error(formatApiErrorDetail(err.response?.data?.detail) || err.message);
@@ -45,6 +58,16 @@ export default function Contact() {
                 Shri Puri Jagannath<br />
                 <span className="italic text-[#D4AF37]">Religious & Charitable Trust.</span>
               </p>
+            </div>
+            <div>
+              <p className="text-[11px] uppercase tracking-eyebrow text-stone-400 mb-3">Email</p>
+              <a
+                href={`mailto:${TRUSTEE_EMAIL}`}
+                data-testid="contact-trustee-email"
+                className="text-[#D4AF37] text-lg link-underline break-all"
+              >
+                {TRUSTEE_EMAIL}
+              </a>
             </div>
             <div>
               <p className="text-[11px] uppercase tracking-eyebrow text-stone-400 mb-3">Web</p>
