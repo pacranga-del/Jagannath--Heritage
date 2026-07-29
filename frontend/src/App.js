@@ -1,53 +1,70 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import SmoothScroll from "@/lib/SmoothScroll";
+import { AuthProvider } from "@/lib/AuthContext";
+import SiteLayout from "@/components/SiteLayout";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+import Home from "@/pages/Home";
+import Temple from "@/pages/Temple";
+import RathaYatra from "@/pages/RathaYatra";
+import GitaGovinda from "@/pages/GitaGovinda";
+import Jagannathastakam from "@/pages/Jagannathastakam";
+import Gaudiya from "@/pages/Gaudiya";
+import Vedanta from "@/pages/Vedanta";
+import Acharyas from "@/pages/Acharyas";
+import Nityanushtanam from "@/pages/Nityanushtanam";
+import Gallery from "@/pages/Gallery";
+import Contact from "@/pages/Contact";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
 
+function ScrollTop() {
+  const { pathname } = useLocation();
   useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <SmoothScroll>
+            <ScrollTop />
+            <Routes>
+              {/* Admin — no site layout */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+
+              {/* Public — with site layout */}
+              <Route
+                path="/*"
+                element={
+                  <SiteLayout>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/temple" element={<Temple />} />
+                      <Route path="/ratha-yatra" element={<RathaYatra />} />
+                      <Route path="/gita-govinda" element={<GitaGovinda />} />
+                      <Route path="/jagannathastakam" element={<Jagannathastakam />} />
+                      <Route path="/gaudiya" element={<Gaudiya />} />
+                      <Route path="/vedanta" element={<Vedanta />} />
+                      <Route path="/acharyas" element={<Acharyas />} />
+                      <Route path="/nityanushtanam" element={<Nityanushtanam />} />
+                      <Route path="/gallery" element={<Gallery />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="*" element={<Home />} />
+                    </Routes>
+                  </SiteLayout>
+                }
+              />
+            </Routes>
+          </SmoothScroll>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );
