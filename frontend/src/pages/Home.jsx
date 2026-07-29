@@ -185,6 +185,17 @@ export default function Home() {
         cta="Meet the Ācāryas"
       />
 
+      {/* MARKETPLACE FEATURE */}
+      <FeatureBlock
+        reversed
+        eyebrow="Marketplace · Ritual Essentials"
+        title={["Poonal, vibhūti, thiruman,", "pavithram, dharbai."]}
+        body="A curated catalog of small things a Vaiṣṇava needs — sourced through temple channels by the Trust. Order by WhatsApp; pay by UPI. No cart, no fuss."
+        image="https://images.unsplash.com/photo-1666694051761-cd972857da30?auto=format&fit=crop&q=85&w=1200"
+        to="/marketplace"
+        cta="Browse the Marketplace"
+      />
+
       {/* Handbook grid */}
       <section className="relative py-24 md:py-40 border-b border-stone-800 glow-gold">
         <div className="max-w-[1440px] mx-auto px-6 md:px-10">

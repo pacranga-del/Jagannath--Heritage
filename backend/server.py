@@ -145,6 +145,37 @@ class CategoryOut(BaseModel):
     count: int
 
 
+class ProductIn(BaseModel):
+    name: str = Field(..., min_length=1, max_length=120)
+    description: str = Field(default="", max_length=800)
+    price: float = Field(..., ge=0)
+    image_data: str
+    variant: str = Field(default="", max_length=120)
+    is_available: bool = True
+
+
+class ProductOut(BaseModel):
+    id: str
+    name: str
+    description: str
+    price: float
+    image_data: str
+    variant: str
+    is_available: bool
+    created_at: str
+
+
+class SettingsIn(BaseModel):
+    whatsapp_number: str = Field(default="", max_length=32)
+    upi_id: str = Field(default="", max_length=120)
+    upi_qr_image: str = Field(default="", max_length=2_000_000)  # base64 or url
+    payee_name: str = Field(default="", max_length=120)
+
+
+class SettingsOut(SettingsIn):
+    updated_at: str = ""
+
+
 # ---------- Startup ----------
 @app.on_event("startup")
 async def startup():
@@ -152,6 +183,8 @@ async def startup():
     await db.users.create_index("id", unique=True)
     await db.photos.create_index("id", unique=True)
     await db.photos.create_index("category")
+    await db.products.create_index("id", unique=True)
+    await db.settings.create_index("key", unique=True)
 
     existing = await db.users.find_one({"email": ADMIN_EMAIL.lower()})
     if not existing:
@@ -202,6 +235,58 @@ async def startup():
                 "created_at": (now - timedelta(minutes=idx)).isoformat(),
             })
         await db.photos.insert_many(docs)
+
+    # Seed products if empty
+    pc = await db.products.count_documents({})
+    if pc == 0:
+        prod_seeds = [
+            ("Poonal (Iyer)", "Iyer variant", "Six-strand hand-spun cotton sacred thread, prepared as per Smārtha tradition. Includes 3 poonals per set.", 150,
+             "https://images.unsplash.com/photo-1666694051761-cd972857da30?auto=format&fit=crop&q=85&w=800"),
+            ("Poonal (Iyengar)", "Iyengar variant", "Sacred thread prepared according to Śrī Vaiṣṇava Iyengar tradition. Set of 3 poonals.", 150,
+             "https://images.unsplash.com/photo-1701453344115-e4616d4844d9?auto=format&fit=crop&q=85&w=800"),
+            ("Vibhuthi", "Sacred ash", "Pure vibhūti prepared from consecrated cow-dung, offered at Śiva temples. 100g packet.", 120,
+             "https://images.pexels.com/photos/31317668/pexels-photo-31317668.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Thiruman", "Śrī Vaiṣṇava mud", "Sacred white clay (thiruman) sourced from divya-deśam kṣetras, for the ūrdhvapuṇḍra tilaka. 50g cake.", 180,
+             "https://images.pexels.com/photos/34484944/pexels-photo-34484944.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Srichurnam", "Vermilion powder", "Traditional red powder (śrīcūrṇam) for the central line of the Vaiṣṇava tilaka. 30g bottle.", 140,
+             "https://images.pexels.com/photos/32299890/pexels-photo-32299890.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Pavithram (2-Dharbai)", "Two-blade variant", "Ring made of two blades of dharbai grass, worn on the right ring finger during rituals. Set of 5.", 90,
+             "https://images.pexels.com/photos/13207104/pexels-photo-13207104.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Pavithram (3-Dharbai)", "Three-blade variant", "Ring made of three blades of dharbai grass — used in śrāddha and pitr-karma. Set of 5.", 120,
+             "https://images.pexels.com/photos/15235034/pexels-photo-15235034.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Koorcham", "Bound bundle", "Small bundle of dharbai grass tied with a knot — placed on rituals as an āsana for pitrs. Pack of 3.", 100,
+             "https://images.pexels.com/photos/13207104/pexels-photo-13207104.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Kattai Dharbai", "Cut dharbai", "Long, cut and cleaned dharbai grass blades — for tarpaṇa, homa and śrāddha. Bundle of 108 blades.", 210,
+             "https://images.pexels.com/photos/15235034/pexels-photo-15235034.jpeg?auto=format&fit=crop&q=85&w=800"),
+            ("Bughnam", "Ritual dharbai form", "Prepared bughnam (bhūg-nam) — the special bundle used to hold offerings during śrāddha. Set of 3.", 160,
+             "https://images.pexels.com/photos/13207104/pexels-photo-13207104.jpeg?auto=format&fit=crop&q=85&w=800"),
+        ]
+        pnow = datetime.now(timezone.utc)
+        pdocs = []
+        for i, (name, variant, desc, price, url) in enumerate(prod_seeds):
+            pdocs.append({
+                "id": str(uuid.uuid4()),
+                "name": name,
+                "variant": variant,
+                "description": desc,
+                "price": float(price),
+                "image_data": url,
+                "is_available": True,
+                "created_at": (pnow - timedelta(minutes=i)).isoformat(),
+            })
+        await db.products.insert_many(pdocs)
+
+    # Seed settings singleton
+    existing_settings = await db.settings.find_one({"key": "main"})
+    if not existing_settings:
+        await db.settings.insert_one({
+            "key": "main",
+            "whatsapp_number": "919999999999",
+            "upi_id": "purijagannathtrust@upi",
+            "payee_name": "Shri Puri Jagannath Trust",
+            "upi_qr_image": "",
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        })
 
 
 @app.on_event("shutdown")
@@ -321,6 +406,110 @@ async def contact_submit(body: ContactIn):
     }
     await db.contact_messages.insert_one(doc)
     return {"ok": True, "id": doc["id"]}
+
+
+# ---------- Products ----------
+def _serialize_product(doc: dict) -> dict:
+    return {
+        "id": doc["id"],
+        "name": doc.get("name", ""),
+        "description": doc.get("description", ""),
+        "price": float(doc.get("price", 0)),
+        "image_data": doc.get("image_data", ""),
+        "variant": doc.get("variant", ""),
+        "is_available": bool(doc.get("is_available", True)),
+        "created_at": doc.get("created_at", ""),
+    }
+
+
+def _validate_image(image_data: str):
+    if not image_data or (not image_data.startswith("data:image/") and not image_data.startswith("http")):
+        raise HTTPException(status_code=400, detail="Invalid image data")
+
+
+@api.get("/products", response_model=List[ProductOut])
+async def products_list():
+    docs = await db.products.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return [_serialize_product(d) for d in docs]
+
+
+@api.post("/products", response_model=ProductOut)
+async def products_create(body: ProductIn, _admin: dict = Depends(require_admin)):
+    _validate_image(body.image_data)
+    doc = {
+        "id": str(uuid.uuid4()),
+        "name": body.name.strip(),
+        "description": body.description.strip(),
+        "price": float(body.price),
+        "image_data": body.image_data,
+        "variant": body.variant.strip(),
+        "is_available": body.is_available,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.products.insert_one(doc)
+    return _serialize_product(doc)
+
+
+@api.put("/products/{product_id}", response_model=ProductOut)
+async def products_update(product_id: str, body: ProductIn, _admin: dict = Depends(require_admin)):
+    _validate_image(body.image_data)
+    existing = await db.products.find_one({"id": product_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Product not found")
+    update = {
+        "name": body.name.strip(),
+        "description": body.description.strip(),
+        "price": float(body.price),
+        "image_data": body.image_data,
+        "variant": body.variant.strip(),
+        "is_available": body.is_available,
+    }
+    await db.products.update_one({"id": product_id}, {"$set": update})
+    doc = await db.products.find_one({"id": product_id}, {"_id": 0})
+    return _serialize_product(doc)
+
+
+@api.delete("/products/{product_id}")
+async def products_delete(product_id: str, _admin: dict = Depends(require_admin)):
+    res = await db.products.delete_one({"id": product_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"ok": True}
+
+
+# ---------- Settings ----------
+def _serialize_settings(doc: dict) -> dict:
+    return {
+        "whatsapp_number": doc.get("whatsapp_number", ""),
+        "upi_id": doc.get("upi_id", ""),
+        "upi_qr_image": doc.get("upi_qr_image", ""),
+        "payee_name": doc.get("payee_name", ""),
+        "updated_at": doc.get("updated_at", ""),
+    }
+
+
+@api.get("/settings", response_model=SettingsOut)
+async def settings_get():
+    doc = await db.settings.find_one({"key": "main"}, {"_id": 0})
+    if not doc:
+        return {"whatsapp_number": "", "upi_id": "", "upi_qr_image": "", "payee_name": "", "updated_at": ""}
+    return _serialize_settings(doc)
+
+
+@api.put("/settings", response_model=SettingsOut)
+async def settings_update(body: SettingsIn, _admin: dict = Depends(require_admin)):
+    if body.upi_qr_image and not (body.upi_qr_image.startswith("data:image/") or body.upi_qr_image.startswith("http") or body.upi_qr_image == ""):
+        raise HTTPException(status_code=400, detail="Invalid QR image")
+    update = {
+        "whatsapp_number": body.whatsapp_number.strip(),
+        "upi_id": body.upi_id.strip(),
+        "upi_qr_image": body.upi_qr_image,
+        "payee_name": body.payee_name.strip(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.settings.update_one({"key": "main"}, {"$set": update}, upsert=True)
+    doc = await db.settings.find_one({"key": "main"}, {"_id": 0})
+    return _serialize_settings(doc)
 
 
 # ---------- Mount ----------

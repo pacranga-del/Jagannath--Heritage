@@ -160,6 +160,143 @@ def test_gallery_delete_no_auth():
     assert r.status_code == 401
 
 
+# ---------- Products ----------
+EXPECTED_PRODUCTS = {"Poonal (Iyer)", "Poonal (Iyengar)", "Vibhuthi", "Thiruman", "Srichurnam",
+                     "Pavithram (2-Dharbai)", "Pavithram (3-Dharbai)", "Koorcham", "Kattai Dharbai", "Bughnam"}
+
+
+def test_products_list_public():
+    r = requests.get(f"{API}/products")
+    assert r.status_code == 200
+    data = r.json()
+    assert isinstance(data, list)
+    names = {p["name"] for p in data}
+    missing = EXPECTED_PRODUCTS - names
+    assert not missing, f"missing seed products: {missing}"
+    # Validate schema on one product
+    p0 = data[0]
+    for k in ("id", "name", "description", "price", "image_data", "variant", "is_available", "created_at"):
+        assert k in p0
+    assert isinstance(p0["price"], (int, float))
+
+
+def test_products_create_no_auth():
+    r = requests.post(f"{API}/products", json={
+        "name": "TEST_x", "description": "d", "price": 10.0, "image_data": TINY_PNG,
+    })
+    assert r.status_code == 401
+
+
+def test_products_create_invalid_image(admin_session):
+    r = admin_session.post(f"{API}/products", json={
+        "name": "TEST_bad", "description": "d", "price": 10.0, "image_data": "notanimage",
+    })
+    assert r.status_code == 400
+
+
+def test_products_crud(admin_session):
+    # Create
+    r = admin_session.post(f"{API}/products", json={
+        "name": "TEST_pytest_product",
+        "description": "test desc",
+        "price": 99.5,
+        "image_data": TINY_PNG,
+        "variant": "TESTvar",
+        "is_available": True,
+    })
+    assert r.status_code == 200, r.text
+    p = r.json()
+    assert p["name"] == "TEST_pytest_product"
+    assert p["price"] == 99.5
+    assert p["variant"] == "TESTvar"
+    pid = p["id"]
+
+    # GET verify persistence
+    g = requests.get(f"{API}/products")
+    assert any(x["id"] == pid for x in g.json())
+
+    # Update - change price
+    u = admin_session.put(f"{API}/products/{pid}", json={
+        "name": "TEST_pytest_product",
+        "description": "test desc updated",
+        "price": 150.0,
+        "image_data": TINY_PNG,
+        "variant": "TESTvar2",
+        "is_available": False,
+    })
+    assert u.status_code == 200, u.text
+    up = u.json()
+    assert up["price"] == 150.0
+    assert up["variant"] == "TESTvar2"
+    assert up["is_available"] is False
+
+    # Verify update persisted
+    g2 = requests.get(f"{API}/products")
+    found = next((x for x in g2.json() if x["id"] == pid), None)
+    assert found and found["price"] == 150.0 and found["description"] == "test desc updated"
+
+    # Delete
+    d = admin_session.delete(f"{API}/products/{pid}")
+    assert d.status_code == 200
+
+    # Delete missing -> 404
+    d2 = admin_session.delete(f"{API}/products/{pid}")
+    assert d2.status_code == 404
+
+
+def test_products_update_missing(admin_session):
+    r = admin_session.put(f"{API}/products/does-not-exist-xyz", json={
+        "name": "x", "description": "", "price": 1.0, "image_data": TINY_PNG,
+    })
+    assert r.status_code == 404
+
+
+# ---------- Settings ----------
+def test_settings_get_public():
+    r = requests.get(f"{API}/settings")
+    assert r.status_code == 200
+    d = r.json()
+    for k in ("whatsapp_number", "upi_id", "upi_qr_image", "payee_name", "updated_at"):
+        assert k in d
+
+
+def test_settings_update_no_auth():
+    r = requests.put(f"{API}/settings", json={
+        "whatsapp_number": "911111111111", "upi_id": "x@upi", "payee_name": "X", "upi_qr_image": "",
+    })
+    assert r.status_code == 401
+
+
+def test_settings_update_admin(admin_session):
+    # Read original
+    orig = requests.get(f"{API}/settings").json()
+    payload = {
+        "whatsapp_number": "919000000001",
+        "upi_id": "TEST_pytest@upi",
+        "payee_name": "TEST_Pytest Payee",
+        "upi_qr_image": TINY_PNG,
+    }
+    r = admin_session.put(f"{API}/settings", json=payload)
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["whatsapp_number"] == payload["whatsapp_number"]
+    assert d["upi_id"] == payload["upi_id"]
+    assert d["payee_name"] == payload["payee_name"]
+    assert d["upi_qr_image"] == payload["upi_qr_image"]
+
+    # Verify persisted via GET
+    g = requests.get(f"{API}/settings").json()
+    assert g["upi_id"] == "TEST_pytest@upi"
+
+    # Restore original
+    admin_session.put(f"{API}/settings", json={
+        "whatsapp_number": orig.get("whatsapp_number", "919999999999"),
+        "upi_id": orig.get("upi_id", "purijagannathtrust@upi"),
+        "payee_name": orig.get("payee_name", "Shri Puri Jagannath Trust"),
+        "upi_qr_image": orig.get("upi_qr_image", ""),
+    })
+
+
 # ---------- Contact ----------
 def test_contact_submit():
     r = requests.post(f"{API}/contact", json={

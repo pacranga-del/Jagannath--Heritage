@@ -11,6 +11,8 @@ export const NAV_LINKS = [
   { to: "/acharyas", label: "Acharyas", testId: "nav-acharyas" },
   { to: "/nityanushtanam", label: "Nityanushtanam", testId: "nav-nitya" },
   { to: "/gallery", label: "Gallery", testId: "nav-gallery" },
+  { to: "/marketplace", label: "Marketplace", testId: "nav-marketplace" },
+  { to: "/payment", label: "Payment", testId: "nav-payment" },
   { to: "/contact", label: "Contact", testId: "nav-contact" },
 ];
 

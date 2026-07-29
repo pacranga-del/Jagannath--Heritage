@@ -16,6 +16,8 @@ import Vedanta from "@/pages/Vedanta";
 import Acharyas from "@/pages/Acharyas";
 import Nityanushtanam from "@/pages/Nityanushtanam";
 import Gallery from "@/pages/Gallery";
+import Marketplace from "@/pages/Marketplace";
+import Payment from "@/pages/Payment";
 import Contact from "@/pages/Contact";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -56,6 +58,8 @@ function App() {
                       <Route path="/acharyas" element={<Acharyas />} />
                       <Route path="/nityanushtanam" element={<Nityanushtanam />} />
                       <Route path="/gallery" element={<Gallery />} />
+                      <Route path="/marketplace" element={<Marketplace />} />
+                      <Route path="/payment" element={<Payment />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="*" element={<Home />} />
                     </Routes>
